@@ -30,6 +30,41 @@ func TestServeHTTP(t *testing.T) {
 				"Operation-Location": {"https://example.com/page?query=1"},
 			},
 		},
+		{
+			description: "should not replace if the header does not exist",
+			rewrites: []Rewrite{
+				{
+					Header:      "Operation-Location",
+					Regex:       "^http://(.+)$",
+					Replacement: "https://$1",
+				},
+			},
+			responseHeaders:         map[string][]string{},
+			expectedResponseHeaders: map[string][]string{},
+		},
+		{
+			description: "should replace multiple headers",
+			rewrites: []Rewrite{
+				{
+					Header:      "Operation-Location",
+					Regex:       "^http://(.+)$",
+					Replacement: "https://$1",
+				},
+				{
+					Header:      "Location",
+					Regex:       "^http://(.+)$",
+					Replacement: "https://$1",
+				},
+			},
+			responseHeaders: map[string][]string{
+				"Operation-Location": {"http://example.com/page?query=1"},
+				"Location":           {"http://example.com"},
+			},
+			expectedResponseHeaders: map[string][]string{
+				"Operation-Location": {"https://example.com/page?query=1"},
+				"Location":           {"https://example.com"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
