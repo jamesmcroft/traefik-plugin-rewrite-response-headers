@@ -1,0 +1,10 @@
+displayName: Rewrite Response Headers
+summary: Rewrite the HTTP response headers by replacing a search regex by a replacement string.
+type: middleware
+import: github.com/jamesmcroft/traefik-plugin-rewrite-response-headers
+testData:
+  lastModified: true
+  rewrites:
+    - header: "Operation-Location"
+      regex: "^http://(.+)$"
+      replacement: "https://$1"
