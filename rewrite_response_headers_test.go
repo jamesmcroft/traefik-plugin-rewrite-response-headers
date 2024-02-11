@@ -38,7 +38,7 @@ func TestServeHTTP(t *testing.T) {
 				{
 					Header:      "Location",
 					Regex:       "^http://(.+?)/(.+)$",
-					Replacement: "https://{{RequestHost}}/$2",
+					Replacement: "https://{RequestHost}/$2",
 				},
 			},
 			responseHeaders: map[string][]string{

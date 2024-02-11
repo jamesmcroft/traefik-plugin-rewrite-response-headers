@@ -89,8 +89,8 @@ func (r *responseRewriter) WriteHeader(statusCode int) {
 		for _, header := range headers {
 			value := rewrite.regex.ReplaceAllString(header, rewrite.replacement)
 
-			if strings.Contains(value, "{{RequestHost}}") {
-				value = strings.ReplaceAll(value, "{{RequestHost}}", r.requestHostUrl)
+			if strings.Contains(value, "{RequestHost}") {
+				value = strings.ReplaceAll(value, "{RequestHost}", r.requestHostUrl)
 			}
 
 			r.writer.Header().Add(rewrite.header, value)

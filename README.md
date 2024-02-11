@@ -36,7 +36,7 @@ http:
           rewrites:
             - header: "Operation-Location"
               regex: "^http://(.+?)/(.+)$"
-              replacement: "https://{{RequestHost}}/$2"
+              replacement: "https://{RequestHost}/$2"
 
   routers:
     routerRoot:
@@ -47,4 +47,4 @@ http:
 ```
 
 > [!NOTE]
-> This plugin includes a `{{RequestHost}}` token which can be used in the `replacement` string to include the original request host in the replaced header value. **It is not required to use this token**.
+> This plugin includes a `{RequestHost}` token which can be used in the `replacement` string to include the original request host in the replaced header value. **It is not required to use this token**.
