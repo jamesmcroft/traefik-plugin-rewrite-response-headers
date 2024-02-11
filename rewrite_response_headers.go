@@ -58,14 +58,14 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 }
 
 func (r *rewriteHeader) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	rrw := &responseRewriter{writer: rw, rewrites: r.rewrites, requestHostUrl: req.URL.Host}
+	rrw := &responseRewriter{writer: rw, rewrites: r.rewrites, requestHost: req.Host}
 	r.next.ServeHTTP(rrw, req)
 }
 
 type responseRewriter struct {
-	writer         http.ResponseWriter
-	rewrites       []rewrite
-	requestHostUrl string
+	writer      http.ResponseWriter
+	rewrites    []rewrite
+	requestHost string
 }
 
 func (r *responseRewriter) Header() http.Header {
@@ -90,7 +90,7 @@ func (r *responseRewriter) WriteHeader(statusCode int) {
 			value := rewrite.regex.ReplaceAllString(header, rewrite.replacement)
 
 			if strings.Contains(value, "{RequestHost}") {
-				value = strings.ReplaceAll(value, "{RequestHost}", r.requestHostUrl)
+				value = strings.ReplaceAll(value, "{RequestHost}", r.requestHost)
 			}
 
 			r.writer.Header().Add(rewrite.header, value)
