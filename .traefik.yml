@@ -7,4 +7,4 @@ testData:
   rewrites:
     - header: "Operation-Location"
       regex: "^http://(.+?)/(.+)$"
-      replacement: "https://{{RequestHost}}/$2"
+      replacement: "https://{RequestHost}/$2"

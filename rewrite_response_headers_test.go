@@ -33,7 +33,7 @@ func TestServeHTTP(t *testing.T) {
 			},
 		},
 		{
-			description: "should replace {{RequestHost}} token with the request host in header",
+			description: "should replace {RequestHost} token with the request host in header",
 			rewrites: []Rewrite{
 				{
 					Header:      "Location",
