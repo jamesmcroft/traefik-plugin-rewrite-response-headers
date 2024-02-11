@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 // Rewrite holds one rewrite header configuration.
@@ -57,13 +58,14 @@ func New(_ context.Context, next http.Handler, config *Config, name string) (htt
 }
 
 func (r *rewriteHeader) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	rrw := &responseRewriter{writer: rw, rewrites: r.rewrites}
+	rrw := &responseRewriter{writer: rw, rewrites: r.rewrites, requestHostUrl: req.URL.Host}
 	r.next.ServeHTTP(rrw, req)
 }
 
 type responseRewriter struct {
-	writer   http.ResponseWriter
-	rewrites []rewrite
+	writer         http.ResponseWriter
+	rewrites       []rewrite
+	requestHostUrl string
 }
 
 func (r *responseRewriter) Header() http.Header {
@@ -86,6 +88,11 @@ func (r *responseRewriter) WriteHeader(statusCode int) {
 
 		for _, header := range headers {
 			value := rewrite.regex.ReplaceAllString(header, rewrite.replacement)
+
+			if strings.Contains(value, "{{RequestHost}}") {
+				value = strings.ReplaceAll(value, "{{RequestHost}}", r.requestHostUrl)
+			}
+
 			r.writer.Header().Add(rewrite.header, value)
 		}
 	}

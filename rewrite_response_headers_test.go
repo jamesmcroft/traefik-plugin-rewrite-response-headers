@@ -8,6 +8,8 @@ import (
 )
 
 func TestServeHTTP(t *testing.T) {
+	target := "https://127.0.0.1"
+
 	testCases := []struct {
 		description             string
 		rewrites                []Rewrite
@@ -28,6 +30,22 @@ func TestServeHTTP(t *testing.T) {
 			},
 			expectedResponseHeaders: map[string][]string{
 				"Operation-Location": {"https://example.com/page?query=1"},
+			},
+		},
+		{
+			description: "should replace {{RequestHost}} token with the request host in header",
+			rewrites: []Rewrite{
+				{
+					Header:      "Location",
+					Regex:       "^http://(.+?)/(.+)$",
+					Replacement: "https://{{RequestHost}}/$2",
+				},
+			},
+			responseHeaders: map[string][]string{
+				"Location": {"http://example.com/page?query=1"},
+			},
+			expectedResponseHeaders: map[string][]string{
+				"Location": {target + "/page?query=1"},
 			},
 		},
 		{
@@ -86,7 +104,7 @@ func TestServeHTTP(t *testing.T) {
 			}
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest(http.MethodGet, "/", nil)
+			request := httptest.NewRequest(http.MethodGet, target, nil)
 
 			rewriteHeader.ServeHTTP(recorder, request)
 			for headerKey, expectedHeaderValues := range testCase.expectedResponseHeaders {
